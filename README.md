@@ -1,2 +1,1 @@
-# expert-app-be
-Submission Expert Aplikasi Backend Dicoding
+# Submission Expert Aplikasi Backend Dicoding
