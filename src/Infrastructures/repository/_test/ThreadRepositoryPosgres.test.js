@@ -80,85 +80,85 @@ describe('ThreadRepositoryPostgres', () => {
         owner: 'user-123'
       }))
     })
+  })
 
-    describe('checkThreadIsExist', () => {
-      it('should throw NotFoundError when id not found', async () => {
-        // Arrange
-        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
+  describe('checkThreadIsExist', () => {
+    it('should throw NotFoundError when id not found', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
 
-        // Action & Assert
-        await expect(threadRepositoryPostgres.checkThreadIsExist('thread-123'))
-          .rejects
-          .toThrowError(NotFoundError)
-      })
-
-      it('should not throw NotFoundError when id exist', async () => {
-        // Arrange
-        const newThread = new NewThread({
-          title: 'dicoding',
-          body: 'body thread'
-        })
-
-        await ThreadsTableTestHelper.addThread(newThread, 'user-123')
-        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
-
-        // Action & Assert
-        await expect(threadRepositoryPostgres.checkThreadIsExist('thread-123')).resolves.not.toThrowError(NotFoundError)
-      })
+      // Action & Assert
+      await expect(threadRepositoryPostgres.checkThreadIsExist('thread-123'))
+        .rejects
+        .toThrowError(NotFoundError)
     })
 
-    describe('getDetailThreadById', () => {
-      it('should throw InvariantError when thread not found', () => {
-        // Arrange
-        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
-
-        // Action & Assert
-        return expect(threadRepositoryPostgres.getDetailThreadById('thread-12223'))
-          .rejects
-          .toThrowError(NotFoundError)
+    it('should not throw NotFoundError when id exist', async () => {
+      // Arrange
+      const newThread = new NewThread({
+        title: 'dicoding',
+        body: 'body thread'
       })
 
-      it('should return detail thread when thread is found', async () => {
-        // Arrange
-        const fakeIdGenerator = () => '123' // stub!
-        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator)
-        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator)
-        const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator)
+      await ThreadsTableTestHelper.addThread(newThread, 'user-123')
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
 
-        const newThread = new NewThread({
-          title: 'dicoding',
-          body: 'body thread'
-        })
-        const newComment = new NewComment({
-          content: 'some comment'
-        })
-        const newReply = new NewReply({
-          content: 'some reply'
-        })
+      // Action & Assert
+      await expect(threadRepositoryPostgres.checkThreadIsExist('thread-123')).resolves.not.toThrowError(NotFoundError)
+    })
+  })
 
-        let result
-        result = await threadRepositoryPostgres.addThread(newThread, 'user-123')
-        const threadId = result.id
-        result = await commentRepositoryPostgres.addComment(newComment, 'user-123', threadId)
-        const commentId = result.id
-        result = await replyRepositoryPostgres.addReply(newReply, 'user-123', commentId)
-        const replyId = result.id
+  describe('getDetailThreadById', () => {
+    it('should throw NotFoundError when thread not found', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
 
-        // Action
-        const thread = await threadRepositoryPostgres.getDetailThreadById(threadId)
+      // Action & Assert
+      await expect(threadRepositoryPostgres.getDetailThreadById('thread-12223'))
+        .rejects
+        .toThrowError(NotFoundError)
+    })
 
-        // Assert
-        expect(thread.id).toBe(threadId)
-        expect(thread.title).toBe(newThread.title)
-        expect(thread.body).toBe(newThread.body)
-        expect(thread.username).toBe(tempUsername)
-        expect(thread.comments[0].id).toBe(commentId)
-        expect(thread.comments[0].content).toBe(newComment.content)
-        expect(thread.comments[0].username).toBe(tempUsername)
-        expect(thread.comments[0].replies[0].id).toBe(replyId)
-        expect(thread.comments[0].replies[0].content).toBe(newReply.content)
-        expect(thread.comments[0].replies[0].username).toBe(tempUsername)
+    it('should return detail thread when thread is found', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator)
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator)
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator)
+
+      const newThread = new NewThread({
+        title: 'dicoding',
+        body: 'body thread'
       })
+      const newComment = new NewComment({
+        content: 'some comment'
+      })
+      const newReply = new NewReply({
+        content: 'some reply'
+      })
+
+      let result
+      result = await threadRepositoryPostgres.addThread(newThread, 'user-123')
+      const threadId = result.id
+      result = await commentRepositoryPostgres.addComment(newComment, 'user-123', threadId)
+      const commentId = result.id
+      result = await replyRepositoryPostgres.addReply(newReply, 'user-123', commentId)
+      const replyId = result.id
+
+      // Action
+      const thread = await threadRepositoryPostgres.getDetailThreadById(threadId)
+
+      // Assert
+      expect(thread.id).toBe(threadId)
+      expect(thread.title).toBe(newThread.title)
+      expect(thread.body).toBe(newThread.body)
+      expect(thread.username).toBe(tempUsername)
+      expect(thread.comments[0].id).toBe(commentId)
+      expect(thread.comments[0].content).toBe(newComment.content)
+      expect(thread.comments[0].username).toBe(tempUsername)
+      expect(thread.comments[0].replies[0].id).toBe(replyId)
+      expect(thread.comments[0].replies[0].content).toBe(newReply.content)
+      expect(thread.comments[0].replies[0].username).toBe(tempUsername)
     })
   })
 })
