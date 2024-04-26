@@ -180,35 +180,35 @@ describe('/threads endpoint', () => {
       const responseThreadJson = JSON.parse(responseThread.payload)
       const tempThreadId = responseThreadJson.data.addedThread.id
 
-      // const requestPayloadComment = {
-      //   content: 'dicoding'
-      // }
-      // const responseComment = await server.inject({
-      //   method: 'POST',
-      //   url: `/threads/${tempThreadId}/comments`,
-      //   payload: requestPayloadComment,
-      //   headers: {
-      //     authorization: `Bearer ${authToken}`
-      //   }
-      // })
+      const requestPayloadComment = {
+        content: 'dicoding'
+      }
+      const responseComment = await server.inject({
+        method: 'POST',
+        url: `/threads/${tempThreadId}/comments`,
+        payload: requestPayloadComment,
+        headers: {
+          authorization: `Bearer ${authToken}`
+        }
+      })
 
-      // const responseCommentJson = JSON.parse(responseComment.payload)
-      // const tempCommentId = responseCommentJson.data.addedComment.id
+      const responseCommentJson = JSON.parse(responseComment.payload)
+      const tempCommentId = responseCommentJson.data.addedComment.id
 
-      // const requestPayloadReply = {
-      //   content: 'dicoding'
-      // }
-      // const responseReply = await server.inject({
-      //   method: 'POST',
-      //   url: `/threads/${tempThreadId}/comments/${tempCommentId}/replies`,
-      //   payload: requestPayloadReply,
-      //   headers: {
-      //     authorization: `Bearer ${authToken}`
-      //   }
-      // })
+      const requestPayloadReply = {
+        content: 'dicoding'
+      }
+      const responseReply = await server.inject({
+        method: 'POST',
+        url: `/threads/${tempThreadId}/comments/${tempCommentId}/replies`,
+        payload: requestPayloadReply,
+        headers: {
+          authorization: `Bearer ${authToken}`
+        }
+      })
 
-      // const responseReplyJson = JSON.parse(responseReply.payload)
-      // const tempReplyId = responseReplyJson.data.addedReply.id
+      const responseReplyJson = JSON.parse(responseReply.payload)
+      const tempReplyId = responseReplyJson.data.addedReply.id
 
       // Action
       const response = await server.inject({
@@ -227,13 +227,13 @@ describe('/threads endpoint', () => {
       expect(thread.title).toEqual(requestPayloadThread.title)
       expect(thread.body).toEqual(requestPayloadThread.body)
       expect(thread.username).toEqual(tempUsername)
-      // expect(thread.comments[0].id).toEqual(tempCommentId)
-      // expect(thread.comments[0].content).toEqual(requestPayloadComment.content)
-      // expect(thread.comments[0].username).toEqual(tempUsername)
+      expect(thread.comments[0].id).toEqual(tempCommentId)
+      expect(thread.comments[0].content).toEqual(requestPayloadComment.content)
+      expect(thread.comments[0].username).toEqual(tempUsername)
 
-      // expect(thread.comments[0].replies[0].id).toEqual(tempReplyId)
-      // expect(thread.comments[0].replies[0].content).toEqual(requestPayloadReply.content)
-      // expect(thread.comments[0].replies[0].username).toEqual(tempUsername)
+      expect(thread.comments[0].replies[0].id).toEqual(tempReplyId)
+      expect(thread.comments[0].replies[0].content).toEqual(requestPayloadReply.content)
+      expect(thread.comments[0].replies[0].username).toEqual(tempUsername)
     })
   })
 })
