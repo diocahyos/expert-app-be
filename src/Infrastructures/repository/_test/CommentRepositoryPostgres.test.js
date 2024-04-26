@@ -19,6 +19,8 @@ describe('CommentRepositoryPostgres', () => {
     await UsersTableTestHelper.cleanTable()
   })
 
+  let tempUsername
+  let tempThreadId
   beforeEach(async () => {
     const registerUser = new RegisterUser({
       username: 'dicoding',
@@ -34,8 +36,11 @@ describe('CommentRepositoryPostgres', () => {
     const userRepositoryPostgres = new UserRepositoryPostgres(pool, fakeIdGenerator)
     const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator)
 
-    await userRepositoryPostgres.addUser(registerUser)
-    await threadRepositoryPostgres.addThread(newThread, 'user-123')
+    let result
+    result = await userRepositoryPostgres.addUser(registerUser)
+    tempUsername = result.username
+    result = await threadRepositoryPostgres.addThread(newThread, 'user-123')
+    tempThreadId = result.id
   })
 
   afterAll(async () => {
@@ -121,6 +126,31 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyOwnerComment('comment-123', 'user-123')).resolves.not.toThrowError(AuthorizationError)
+    })
+  })
+
+  describe('getDetailCommentByThreadId', () => {
+    it('should return list detail thread when thread is found', async () => {
+    // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator)
+
+      const newComment = new NewComment({
+        content: 'some comment'
+      })
+
+      let result
+      result = await commentRepositoryPostgres.addComment(newComment, 'user-123', tempThreadId)
+      const commentId = result.id
+
+      // Action
+      result = await commentRepositoryPostgres.getDetailCommentByThreadId(tempThreadId)
+
+      // Assert
+      expect(result[0].id).toBe(commentId)
+      expect(result[0].content).toBe(newComment.content)
+      expect(result[0].is_deleted).toBe(false)
+      expect(result[0].username).toBe(tempUsername)
     })
   })
 

@@ -6,10 +6,6 @@ const ThreadRepositoryPostgres = require('../ThreadRepositoryPosgres')
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper')
 const UserRepositoryPostgres = require('../UserRepositoryPostgres')
 const RegisterUser = require('../../../Domains/users/entities/RegisterUser')
-const CommentRepositoryPostgres = require('../CommentRepositoryPostgres')
-const ReplyRepositoryPostgres = require('../ReplyRepositoryPostgres')
-const NewComment = require('../../../Domains/comments/entities/NewComment')
-const NewReply = require('../../../Domains/replies/entities/NewReply')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper')
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper')
@@ -119,46 +115,28 @@ describe('ThreadRepositoryPostgres', () => {
         .toThrowError(NotFoundError)
     })
 
-    it('should return detail thread when thread is found', async () => {
+    it('should return list detail thread when thread is found', async () => {
       // Arrange
       const fakeIdGenerator = () => '123' // stub!
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator)
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator)
-      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator)
 
       const newThread = new NewThread({
         title: 'dicoding',
         body: 'body thread'
       })
-      const newComment = new NewComment({
-        content: 'some comment'
-      })
-      const newReply = new NewReply({
-        content: 'some reply'
-      })
 
       let result
       result = await threadRepositoryPostgres.addThread(newThread, 'user-123')
       const threadId = result.id
-      result = await commentRepositoryPostgres.addComment(newComment, 'user-123', threadId)
-      const commentId = result.id
-      result = await replyRepositoryPostgres.addReply(newReply, 'user-123', commentId)
-      const replyId = result.id
 
       // Action
-      const thread = await threadRepositoryPostgres.getDetailThreadById(threadId)
+      result = await threadRepositoryPostgres.getDetailThreadById(threadId)
 
       // Assert
-      expect(thread.id).toBe(threadId)
-      expect(thread.title).toBe(newThread.title)
-      expect(thread.body).toBe(newThread.body)
-      expect(thread.username).toBe(tempUsername)
-      expect(thread.comments[0].id).toBe(commentId)
-      expect(thread.comments[0].content).toBe(newComment.content)
-      expect(thread.comments[0].username).toBe(tempUsername)
-      expect(thread.comments[0].replies[0].id).toBe(replyId)
-      expect(thread.comments[0].replies[0].content).toBe(newReply.content)
-      expect(thread.comments[0].replies[0].username).toBe(tempUsername)
+      expect(result[0].id).toBe(threadId)
+      expect(result[0].title).toBe(newThread.title)
+      expect(result[0].body).toBe(newThread.body)
+      expect(result[0].username).toBe(tempUsername)
     })
   })
 })

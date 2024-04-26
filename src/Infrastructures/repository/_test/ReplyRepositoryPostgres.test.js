@@ -23,6 +23,8 @@ describe('ReplyRepositoryPostgres', () => {
     await UsersTableTestHelper.cleanTable()
   })
 
+  let tempUsername
+  let tempCommentId
   beforeEach(async () => {
     const registerUser = new RegisterUser({
       username: 'dicoding',
@@ -42,9 +44,12 @@ describe('ReplyRepositoryPostgres', () => {
     const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator)
     const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator)
 
-    await userRepositoryPostgres.addUser(registerUser)
-    await threadRepositoryPostgres.addThread(newThread, 'user-123')
-    await commentRepositoryPostgres.addComment(newComment, 'user-123', 'thread-123')
+    let result
+    result = await userRepositoryPostgres.addUser(registerUser)
+    tempUsername = result.username
+    result = await threadRepositoryPostgres.addThread(newThread, 'user-123')
+    result = await commentRepositoryPostgres.addComment(newComment, 'user-123', result.id)
+    tempCommentId = result.id
   })
 
   afterAll(async () => {
@@ -130,6 +135,31 @@ describe('ReplyRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(replyRepositoryPostgres.verifyOwnerReply('reply-123', 'user-123')).resolves.not.toThrowError(AuthorizationError)
+    })
+  })
+
+  describe('getDetailReplyByCommentId', () => {
+    it('should return list detail thread when thread is found', async () => {
+    // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator)
+
+      const newReply = new NewReply({
+        content: 'some reply'
+      })
+
+      let result
+      result = await replyRepositoryPostgres.addReply(newReply, 'user-123', tempCommentId)
+      const replyId = result.id
+
+      // Action
+      result = await replyRepositoryPostgres.getDetailReplyByCommentId(tempCommentId)
+
+      // Assert
+      expect(result[0].id).toBe(replyId)
+      expect(result[0].content).toBe(newReply.content)
+      expect(result[0].is_deleted).toBe(false)
+      expect(result[0].username).toBe(tempUsername)
     })
   })
 
