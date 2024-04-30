@@ -143,14 +143,20 @@ describe('CommentRepositoryPostgres', () => {
       result = await commentRepositoryPostgres.addComment(newComment, 'user-123', tempThreadId)
       const commentId = result.id
 
+      result = await CommentsTableTestHelper.findCommentsById(commentId)
+      const date = result[0].date
+
       // Action
       result = await commentRepositoryPostgres.getDetailCommentByThreadId(tempThreadId)
 
       // Assert
-      expect(result[0].id).toBe(commentId)
-      expect(result[0].content).toBe(newComment.content)
-      expect(result[0].is_deleted).toBe(false)
-      expect(result[0].username).toBe(tempUsername)
+      expect(result).toStrictEqual([{
+        id: commentId,
+        content: newComment.content,
+        date,
+        is_deleted: false,
+        username: tempUsername
+      }])
     })
   })
 

@@ -129,14 +129,20 @@ describe('ThreadRepositoryPostgres', () => {
       result = await threadRepositoryPostgres.addThread(newThread, 'user-123')
       const threadId = result.id
 
+      result = await ThreadsTableTestHelper.findThreadsById(threadId)
+      const date = result[0].date
+
       // Action
       result = await threadRepositoryPostgres.getDetailThreadById(threadId)
 
       // Assert
-      expect(result[0].id).toBe(threadId)
-      expect(result[0].title).toBe(newThread.title)
-      expect(result[0].body).toBe(newThread.body)
-      expect(result[0].username).toBe(tempUsername)
+      expect(result).toStrictEqual({
+        id: threadId,
+        title: newThread.title,
+        body: newThread.body,
+        date,
+        username: tempUsername
+      })
     })
   })
 })

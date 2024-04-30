@@ -12,7 +12,7 @@ class DetailComment {
   }
 
   _verifyPayload ({ id, content, date, username, replies }) {
-    if (!id || !content || !date || !username || !replies) {
+    if (!id || !content || !date || !username) {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY')
     }
 

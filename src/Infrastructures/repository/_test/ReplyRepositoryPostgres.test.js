@@ -152,14 +152,20 @@ describe('ReplyRepositoryPostgres', () => {
       result = await replyRepositoryPostgres.addReply(newReply, 'user-123', tempCommentId)
       const replyId = result.id
 
+      result = await RepliesTableTestHelper.findRepliesById(replyId)
+      const date = result[0].date
+
       // Action
       result = await replyRepositoryPostgres.getDetailReplyByCommentId(tempCommentId)
 
       // Assert
-      expect(result[0].id).toBe(replyId)
-      expect(result[0].content).toBe(newReply.content)
-      expect(result[0].is_deleted).toBe(false)
-      expect(result[0].username).toBe(tempUsername)
+      expect(result).toStrictEqual([{
+        id: replyId,
+        content: newReply.content,
+        date,
+        is_deleted: false,
+        username: tempUsername
+      }])
     })
   })
 

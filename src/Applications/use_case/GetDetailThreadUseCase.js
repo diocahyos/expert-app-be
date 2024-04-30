@@ -14,12 +14,14 @@ class GetDetailThreadUseCase {
     const detailThread = await this._threadRepository.getDetailThreadById(threadId)
     const detailComment = await this._commentRepository.getDetailCommentByThreadId(threadId)
 
+    console.log('CEK DATA, ', detailThread.id)
+
     const thread = new DetailThread({
-      id: detailThread[0].id,
-      title: detailThread[0].title,
-      body: detailThread[0].body,
-      date: detailThread[0].date,
-      username: detailThread[0].username,
+      id: detailThread.id,
+      title: detailThread.title,
+      body: detailThread.body,
+      date: detailThread.date,
+      username: detailThread.username,
       comments: []
     })
 
