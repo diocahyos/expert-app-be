@@ -195,6 +195,14 @@ describe('/threads endpoint', () => {
       const responseCommentJson = JSON.parse(responseComment.payload)
       const tempCommentId = responseCommentJson.data.addedComment.id
 
+      // await server.inject({
+      //   method: 'PUT',
+      //   url: `/threads/${tempThreadId}/comments/${tempCommentId}/likes`,
+      //   headers: {
+      //     authorization: `Bearer ${authToken}`
+      //   }
+      // })
+
       const requestPayloadReply = {
         content: 'dicoding'
       }
