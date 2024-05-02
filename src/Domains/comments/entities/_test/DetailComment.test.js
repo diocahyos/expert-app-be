@@ -18,6 +18,7 @@ describe('a DetailComment entities', () => {
       id: {},
       content: 123,
       date: 2023,
+      likeCount: 0,
       username: 234,
       replies: 'comment'
     }
@@ -32,6 +33,7 @@ describe('a DetailComment entities', () => {
       id: 'comment-AqVg2b9JyQXR6wSQ2TmH4',
       content: 'sebuah comment',
       date: '2021-08-08T07:59:16.198Z',
+      likeCount: 0,
       username: 'dicoding',
       replies: [{}]
     }
@@ -43,6 +45,7 @@ describe('a DetailComment entities', () => {
     expect(detailComment.id).toEqual(payload.id)
     expect(detailComment.content).toEqual(payload.content)
     expect(detailComment.date).toEqual(payload.date)
+    expect(detailComment.likeCount).toEqual(payload.likeCount)
     expect(detailComment.username).toEqual(payload.username)
     expect(detailComment.replies).toEqual(payload.replies)
   })
