@@ -3,17 +3,18 @@ const DetailReply = require('../../Domains/replies/entities/DetailReply')
 const DetailThread = require('../../Domains/threads/entities/DetailThread')
 
 class GetDetailThreadUseCase {
-  constructor ({ threadRepository, commentRepository, replyRepository, userCommentLikeRepository }) {
+  constructor ({ threadRepository, commentRepository, replyRepository }) {
     this._threadRepository = threadRepository
     this._commentRepository = commentRepository
     this._replyRepository = replyRepository
-    this._userCommentLikeRepository = userCommentLikeRepository
   }
 
   async execute (useCaseParam) {
     const { threadId } = useCaseParam
     const detailThread = await this._threadRepository.getDetailThreadById(threadId)
     const detailComment = await this._commentRepository.getDetailCommentByThreadId(threadId)
+
+    console.log('CEK DATA, ', detailThread.id)
 
     const thread = new DetailThread({
       id: detailThread.id,
@@ -34,13 +35,10 @@ class GetDetailThreadUseCase {
         contentComment = comment.content
       }
 
-      const likeCount = await this._userCommentLikeRepository.getCommentLikeByCommentId(comment.id)
-
       const commentObject = new DetailComment({
         id: comment.id,
         content: contentComment,
         date: comment.date,
-        likeCount,
         username: comment.username,
         replies: []
       })
