@@ -1,0 +1,9 @@
+Domain 
+- lemon-ears-peel-busily.a276.dcdg.xyz
+- www.lemon-ears-peel-busily.a276.dcdg.xyz
+
+Link Github
+https://github.com/diocahyos/expert-app-be
+
+PS
+- Konfigurasi NGINX ada di folder nginx
